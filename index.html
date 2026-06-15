@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishing Clicker: Tycoon Edition</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <audio id="bg-music" loop><source src="Fishing.mp3" type="audio/mpeg"></audio>
+    <audio id="pop-sound"><source src="pop.mp3" type="audio/mpeg"></audio>
+    <audio id="splash-sound"><source src="Splash.mp3" type="audio/mpeg"></audio>
+    <audio id="rebirth-sound"><source src="rebirth.mp3" type="audio/mpeg"></audio>
+
+    <div id="bubble-container"></div>
+    <div id="notification" class="notification-pop hidden">🎣 Not enough fish! Keep on angling!</div>
+
+    <button id="settings-toggle-btn" onclick="toggleSettingsMenu()">⚙️</button>
+    <div id="settings-overlay" class="hidden" onclick="toggleSettingsMenu()">
+        <div id="settings-modal" onclick="event.stopPropagation()">
+            <h2>Options Menu</h2>
+            <hr>
+            <div class="setting-row">
+                <label for="volume-control">🎵 Max Music Volume</label>
+                <input type="range" id="volume-control" min="0" max="1" step="0.1" value="0.5" oninput="changeVolume(this.value)">
+            </div>
+            <div class="setting-row">
+                <button id="mute-btn" onclick="toggleMute()">Mute Audio</button>
+            </div>
+            <button class="close-settings-btn" onclick="toggleSettingsMenu()">Close</button>
+        </div>
+    </div>
+
+    <div id="start-screen" class="screen visible">
+        <div class="light-ray ray-1"></div>
+        <div class="light-ray ray-2"></div>
+        
+        <div class="menu-fish" style="top: 15%; animation-duration: 22s; animation-delay: -2s;">🐟</div>
+        <div class="menu-fish" style="top: 45%; animation-duration: 15s; animation-delay: -7s;">🐠</div>
+        <div class="menu-fish" style="top: 75%; animation-duration: 28s; animation-delay: -12s;">🐡</div>
+
+        <div class="start-card">
+            <h1>🎣 Fishing Clicker <span class="title-sub">Tycoon Edition</span></h1>
+            <p>Welcome Angler! Cast your line, catch elusive fish, buy powerful gear, and ascend to become the ultimate fishing tycoon.</p>
+            <button id="start-game-btn" class="menu-start-btn" onclick="startGame()">CAST LINE</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen hidden">
+        <div class="game-container">
+            
+            <div class="side-panel left-panel">
+                <div class="panel-section">
+                    <h3>🌌 ASCENSION</h3>
+                    <div class="rebirth-stats">
+                        <p>Total Rebirths: <strong id="rebirth-count">0</strong></p>
+                        <p>Multiplier: <strong id="multiplier-count">+0%</strong></p>
+                    </div>
+                    <div class="rebirth-info-box">
+                        <h4>Goal:</h4>
+                        <p>Max out ALL 5 pieces of tackle in the shop. Each tier requires dedication to unlock your next Rebirth!</p>
+                    </div>
+                    <button id="rebirth-btn" class="rebirth-btn-locked" onclick="attemptRebirth()">🔒 REBIRTH LOCKED</button>
+                </div>
+
+                <div class="panel-section game-discord-box">
+                    <h4>Community Hub</h4>
+                    <p>Share high scores & give feedback!</p>
+                    <a href="https://discord.gg/yourlink" target="_blank" class="discord-btn compact">💬 Open Discord</a>
+                </div>
+            </div>
+
+            <div class="click-section">
+                <div class="stats-card">
+                    <h2>Fish Caught: <span id="fish-count">0</span></h2>
+                    <p>Fish per click: <strong><span id="fpc-count">1</span></strong></p>
+                </div>
+                
+                <div id="pond-wrapper">
+                    <div id="pond" onclick="clickPond()">
+                        <div class="pond-ripple"></div>
+                        <div id="swimming-fish-aquarium"></div>
+                        <div id="jumping-fish-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="side-panel shop-section">
+                <h3>🎣 TACKLE SHOP</h3>
+                <div class="shop-grid">
+                    
+                    <div class="shop-item" onclick="buyUpgrade('hook')">
+                        <div class="item-info">
+                            <span class="item-name">🪝 Fishing Hook</span>
+                            <span class="item-lvl" id="hook-badge">Lv. <span id="hook-lvl">0</span>/40</span>
+                        </div>
+                        <p class="item-desc">+1 fish/click</p>
+                        <button class="buy-btn">Cost: <span id="hook-cost">10</span> 🐟</button>
+                    </div>
+                    
+                    <div class="shop-item" onclick="buyUpgrade('line')">
+                        <div class="item-info">
+                            <span class="item-name">🧵 Fishing Line</span>
+                            <span class="item-lvl" id="line-badge">Lv. <span id="line-lvl">0</span>/30</span>
+                        </div>
+                        <p class="item-desc">+5 fish/click</p>
+                        <button class="buy-btn">Cost: <span id="line-cost">50</span> 🐟</button>
+                    </div>
+
+                    <div class="shop-item" onclick="buyUpgrade('bait')">
+                        <div class="item-info">
+                            <span class="item-name">🪱 Premium Bait</span>
+                            <span class="item-lvl" id="bait-badge">Lv. <span id="bait-lvl">0</span>/20</span>
+                        </div>
+                        <p class="item-desc">+25 fish/click</p>
+                        <button class="buy-btn">Cost: <span id="bait-cost">250</span> 🐟</button>
+                    </div>
+
+                    <div class="shop-item" onclick="buyUpgrade('rod')">
+                        <div class="item-info">
+                            <span class="item-name">🎣 Carbon Fiber Rod</span>
+                            <span class="item-lvl" id="rod-badge">Lv. <span id="rod-lvl">0</span>/15</span>
+                        </div>
+                        <p class="item-desc">+100 fish/click</p>
+                        <button class="buy-btn">Cost: <span id="rod-cost">1000</span> 🐟</button>
+                    </div>
+
+                    <div class="shop-item" onclick="buyUpgrade('tackleBox')">
+                        <div class="item-info">
+                            <span class="item-name">🧰 Deluxe Tackle Box</span>
+                            <span class="item-lvl" id="tackleBox-badge">Lv. <span id="tackleBox-lvl">0</span>/10</span>
+                        </div>
+                        <p class="item-desc">+500 fish/click</p>
+                        <button class="buy-btn">Cost: <span id="tackleBox-cost">5000</span> 🐟</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
