@@ -1,265 +1,265 @@
-/* --- Global Overrides & Styling Canvas --- */
-body {
-    margin: 0;
-    font-family: 'Fredoka', sans-serif;
-    background: radial-gradient(circle at bottom, #003b5c 0%, #001124 100%);
-    color: #e0f7fa;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
+/* --- RESET & GLOBAL SANITIZATION --- */
+* {
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+    -webkit-tap-highlight-color: transparent;
     user-select: none;
 }
 
-.hidden { display: none !important; }
-.visible { display: flex !important; }
-
-/* --- CORE ANIMATION ENGINE --- */
-@keyframes riseUp {
-    0% { transform: translateY(0) translateX(0); opacity: 0; }
-    10% { opacity: 0.6; }
-    90% { opacity: 0.6; }
-    100% { transform: translateY(-110vh) translateX(50px); opacity: 0; }
-}
-
-@keyframes fishSwim {
-    0% { left: -50px; transform: scaleX(1); }
-    49% { transform: scaleX(1); }
-    50% { left: 110%; transform: scaleX(-1); }
-    99% { transform: scaleX(-1); }
-    100% { left: -50px; transform: scaleX(1); }
-}
-
-@keyframes fishJumpAnimation {
-    0% { transform: translateY(100px) scale(0.5) rotate(-45deg); opacity: 0; }
-    30% { opacity: 1; }
-    50% { transform: translateY(-100px) scale(1.3) rotate(0deg); opacity: 1; }
-    70% { opacity: 1; }
-    100% { transform: translateY(100px) scale(0.5) rotate(45deg); opacity: 0; }
-}
-
-@keyframes modalFadeIn {
-    from { opacity: 0; transform: scale(0.8); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes flashGold {
-    0% { box-shadow: 0 0 5px #ffd700; }
-    50% { box-shadow: 0 0 25px #ffd700; }
-    100% { box-shadow: 0 0 5px #ffd700; }
-}
-
-/* --- ANIMATED STARTER SCREEN ENGINE --- */
-#start-screen {
-    background: linear-gradient(180deg, #0a3d62 0%, #001f3f 50%, #001020 100%);
-    background-size: 400% 400%;
-    animation: underwaterGlow 12s ease infinite;
+body, html {
+    font-family: 'Fredoka', system-ui, sans-serif;
+    background: radial-gradient(circle at center, #021124 0%, #00050d 100%);
+    color: #e6f1ff;
+    overflow-x: hidden;
+    min-height: 100vh;
+    width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    z-index: 9999;
-    overflow: hidden;
 }
 
-@keyframes underwaterGlow {
-    0% { background-position: 50% 0%; }
-    50% { background-position: 50% 100%; }
-    100% { background-position: 50% 0%; }
+button, .pond-click-zone { touch-action: manipulation; }
+.hidden { display: none !important; }
+.visible { display: flex !important; }
+
+/* --- CORE MAIN WRAPPER SCREEN --- */
+.screen {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Flow top down natively */
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-.start-card {
-    background: rgba(2, 28, 54, 0.65);
-    border: 3px solid rgba(116, 235, 213, 0.4);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 0 20px rgba(116, 235, 213, 0.1);
-    padding: 50px;
-    border-radius: 30px;
+/* Start Screen Layout Specifics */
+#start-screen {
+    justify-content: center; /* Center initial title cards perfectly */
+}
+.game-title {
+    font-size: 2.5rem;
     text-align: center;
-    max-width: 550px;
-    backdrop-filter: blur(12px);
-    z-index: 10;
-    animation: menuFloat 4s ease-in-out infinite;
+    color: #64ffda;
+    text-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
+    margin-bottom: 10px;
+}
+.game-subtitle {
+    font-size: 1rem;
+    color: #8892b0;
+    text-align: center;
+    max-width: 500px;
+    margin-bottom: 30px;
 }
 
-@keyframes menuFloat {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-12px); }
+/* --- HUD TOP MANAGEMENT HEADER --- */
+.hud-header {
+    width: 100%;
+    max-width: 1000px; /* Lock boundary widths to align with columns */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10, 25, 47, 0.7);
+    border: 2px solid #172a45;
+    padding: 14px 20px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+}
+.hud-stat { font-size: 1.2rem; font-weight: bold; color: #64ffda; }
+.settings-toggle-btn { background: none; border: none; font-size: 1.5rem; color: #64ffda; cursor: pointer; }
+
+/* --- THE MASTER FIXED CONTAINER GRID --- */
+.game-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Exact 50/50 clean split on desktop */
+    gap: 25px;
+    width: 100%;
+    max-width: 1000px; /* Prevents elements stretching infinitely across huge monitors */
+    margin: 0 auto;
 }
 
-.start-card h1 {
-    font-size: 3.5rem;
-    color: #ffffff;
-    text-shadow: 0 4px 15px rgba(116, 235, 213, 0.6);
-    margin: 0;
-    animation: titlePulse 2s ease-in-out infinite alternate;
+/* LEFT BLOCK: ACTIVE FISHING HOLE */
+.pond-section {
+    background: rgba(10, 25, 47, 0.5);
+    border: 2px solid #172a45;
+    border-radius: 24px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 520px; /* Keeps card lengths symmetrical */
+    backdrop-filter: blur(5px);
 }
 
-@keyframes titlePulse {
-    0% { transform: scale(1); }
-    100% { transform: scale(1.03); text-shadow: 0 4px 25px rgba(116, 235, 213, 0.9); }
-}
+.score-container { text-align: center; width: 100%; }
+#fish-count { font-size: 3.8rem; font-weight: 800; color: #64ffda; text-shadow: 0 0 20px rgba(100,255,218,0.3); }
+.sub-score { color: #8892b0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
 
-.title-sub {
-    display: block;
-    font-size: 1.4rem;
-    color: #ffd700;
-    text-shadow: 0 2px 8px rgba(255, 215, 0, 0.5);
-    letter-spacing: 2px;
+.income-tracker-row {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
     margin-top: 5px;
 }
+.fpc-display { color: #00b4d8; font-weight: bold; font-size: 1.1rem; }
+.fps-display { color: #a29bfe; font-weight: bold; font-size: 1.1rem; }
 
-.start-card p {
-    color: #b0d4de;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin: 25px 0 35px 0;
+/* THE LIVING WATER SPHERE */
+#pond-wrapper {
+    position: relative;
+    width: 250px; height: 250px;
+    margin: 15px 0;
 }
 
-.menu-start-btn {
-    background: linear-gradient(135deg, #74ebd5 0%, #9ecee6 100%);
-    color: #001f3f;
-    border: none;
-    font-family: 'Fredoka', sans-serif;
-    font-size: 1.6rem;
-    font-weight: bold;
-    padding: 16px 45px;
-    border-radius: 50px;
+.pond-click-zone {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 8px 20px rgba(116, 235, 213, 0.4);
-    transition: all 0.3s ease;
+    border: 8px solid #4cc9f0;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 0 30px rgba(0,0,0,0.6);
 }
 
-.menu-start-btn:hover {
-    transform: scale(1.1) translateY(-3px);
-    box-shadow: 0 12px 30px rgba(116, 235, 213, 0.7);
+.water-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.water-bg { background: radial-gradient(circle at 30% 30%, #00b4d8 0%, #0077b6 50%, #03045e 100%); }
+.water-currents {
+    background: radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    animation: waterPulse 6s ease-in-out infinite alternate;
+}
+.water-glare { background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.2) 100%); z-index: 3; }
+
+@keyframes waterPulse {
+    0% { transform: scale(1) rotate(0deg); opacity: 0.6; }
+    100% { transform: scale(1.15) rotate(15deg); opacity: 0.9; }
 }
 
-.light-ray {
-    position: absolute;
-    top: -50%; width: 30vw; height: 200vh;
-    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(116, 235, 213, 0.08) 50%, rgba(255,255,255,0) 100%);
-    transform: rotate(25deg);
-    pointer-events: none;
+/* RIGHT BLOCK: EVOLUTION GEAR SHOP */
+.shop-section {
+    background: rgba(10, 25, 47, 0.5);
+    border: 2px solid #172a45;
+    border-radius: 24px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 600px;
+    overflow-y: auto;
 }
-.ray-1 { left: 10%; animation: raySwift 14s linear infinite; }
-.ray-2 { left: 50%; animation: raySwift 20s linear infinite reverse; }
+.shop-section h2 { color: #ccd6f6; border-bottom: 2px solid #172a45; padding-bottom: 6px; font-size: 1.2rem; margin-top: 15px; }
+.shop-section h2:first-of-type { margin-top: 0; }
 
-@keyframes raySwift {
-    0% { transform: rotate(20deg) translateX(-10%); opacity: 0.3; }
-    50% { opacity: 0.8; }
-    100% { transform: rotate(30deg) translateX(10%); opacity: 0.3; }
+/* Custom Scrollbar mechanics inside shop listings */
+.shop-section::-webkit-scrollbar { width: 6px; }
+.shop-section::-webkit-scrollbar-thumb { background: #172a45; border-radius: 10px; }
+
+.upgrade-card {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #112240; padding: 12px 18px; border-radius: 16px;
+    border: 1px solid #233554; cursor: pointer; transition: all 0.2s ease;
 }
+.upgrade-card:hover { transform: translateY(-2px); border-color: #64ffda; background: #172a45; }
 
-.menu-fish {
-    position: absolute; font-size: 2rem; pointer-events: none;
-    animation: menuSwim 16s linear infinite; opacity: 0.25;
+.upgrade-info h3 { font-size: 1rem; color: #64ffda; margin-bottom: 2px; }
+.upgrade-info p { font-size: 0.8rem; color: #8892b0; }
+
+.buy-btn {
+    background: linear-gradient(135deg, #64ffda 0%, #48cfae 100%);
+    color: #020c1b; border: none; padding: 10px 14px; border-radius: 10px;
+    font-weight: bold; font-size: 0.85rem; min-width: 100px; text-align: center; pointer-events: none;
 }
+.lvl-maxed { background: linear-gradient(135deg, #ff5e62 0%, #ff9966 100%) !important; color: white !important; }
 
-@keyframes menuSwim {
-    0% { left: -10%; transform: scaleX(1); }
-    50% { left: 110%; transform: scaleX(-1); }
-    100% { left: -10%; transform: scaleX(1); }
+/* ASCENSION CONTAINER PANEL */
+.prestige-box { margin-top: 10px; padding-top: 15px; border-top: 2px solid #172a45; text-align: center; }
+.rebirth-btn-locked { width: 100%; background: #233554; color: #495d7c; border: none; padding: 14px; font-weight: bold; border-radius: 12px; font-size: 1rem; font-family: 'Fredoka'; }
+.rebirth-btn-ready {
+    width: 100%; background: linear-gradient(45deg, #ff007f 0%, #ff70a6 100%); color: white; border: none; padding: 14px;
+    font-weight: bold; border-radius: 12px; font-size: 1rem; font-family: 'Fredoka';
+    box-shadow: 0 0 25px rgba(255, 0, 127, 0.5); cursor: pointer; animation: pulse 1.5s infinite;
 }
+.prestige-hint { font-size: 0.75rem; color: #8892b0; margin-top: 6px; }
 
-/* --- PARTICLE ENGINE: IN-GAME BUBBLES --- */
-#bubble-container {
-    position: absolute; width: 100%; height: 100%; top: 0; left: 0;
-    pointer-events: none; z-index: -1; overflow: hidden;
+/* --- AUDIO CONTROL MODALS --- */
+.overlay { position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(2,12,27,0.85); display:flex; align-items:center; justify-content:center; z-index: 100; backdrop-filter: blur(8px); }
+.settings-card { background: #112240; border: 2px solid #64ffda; padding: 30px; border-radius: 20px; width: 90%; max-width: 360px; text-align: center; }
+.settings-card h3 { color: #64ffda; margin-bottom: 25px; font-size: 1.5rem; }
+.setting-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; align-items: center; font-weight: bold; }
+.setting-row input { width: 90%; accent-color: #64ffda; cursor: pointer; }
+.menu-btn { width: 100%; background: #172a45; border: 1px solid #64ffda; color: #64ffda; padding: 12px; font-weight: bold; border-radius: 10px; cursor: pointer; font-family: 'Fredoka'; margin-bottom: 12px; }
+.launch-btn { font-size: 1.4rem; width: auto; padding: 16px 50px; border-radius: 40px; box-shadow: 0 8px 25px rgba(100,255,218,0.3); }
+.close-btn { background: #64ffda; color: #020c1b; margin-top: 10px; }
+
+/* --- VFX ANIMATION ASSETS --- */
+#fx-particle-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+.splash-droplet { position: absolute; background: linear-gradient(135deg, #ffffff 0%, #90e0ef 70%); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; box-shadow: 0 2px 6px rgba(0, 180, 216, 0.4); pointer-events: none; }
+.water-ripple-ring { position: absolute; border: 4px solid rgba(144, 224, 239, 0.8); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; animation: rippleOutward 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; }
+.floating-score { position: absolute; font-size: 2.2rem; font-weight: 700; color: #64ffda; text-shadow: 0 4px 12px rgba(2,12,27,0.8); pointer-events: none; z-index: 10; animation: textFloatUp 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards; }
+
+.aquarium-panel { width: 100%; margin-top: 10px; text-align: center; }
+.aquarium-panel h4 { font-size: 0.8rem; color: #8892b0; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+#swimming-fish-aquarium { width: 100%; height: 75px; background: rgba(10, 25, 47, 0.6); border-radius: 12px; border: 1px dashed #233554; position: relative; overflow: hidden; }
+
+/* Vector Fish Rendering Elements */
+#jumping-fish-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.cartoon-fish-art { position: absolute; width: 55px; height: 32px; display: flex; align-items: center; pointer-events: none; }
+.aquarium-fish-instance { animation: swimAcross 12s linear infinite; opacity: 0.75; }
+.jumping-fish-instance { animation: jumpArcHigh 1.3s cubic-bezier(0.22, 1, 0.36, 1) forwards; z-index: 10; }
+.fish-body { position: relative; width: 40px; height: 26px; background: linear-gradient(135deg, #ff7043 0%, #f4511e 100%); border-radius: 50%; z-index: 2; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+.fish-tail { width: 0; height: 0; border-top: 10px solid transparent; border-bottom: 10px solid transparent; border-left: 15px solid #f4511e; margin-left: -5px; z-index: 1; transform-origin: left center; animation: tailWiggle 0.25s ease-in-out infinite alternate; }
+.fish-eye { position: absolute; top: 5px; right: 8px; width: 7px; height: 7px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.fish-pupil { width: 3px; height: 3px; background: black; border-radius: 50%; }
+.fish-fin { position: absolute; bottom: -4px; left: 12px; width: 10px; height: 8px; background: #ff7043; border-radius: 0 0 8px 8px; transform: rotate(-15deg); }
+
+.fish-theme-blue .fish-body { background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%); }
+.fish-theme-blue .fish-tail { border-left-color: #4361ee; }
+.fish-theme-blue .fish-fin { background: #4cc9f0; }
+.fish-theme-gold .fish-body { background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%); }
+.fish-theme-gold .fish-tail { border-left-color: #fb8500; }
+.fish-theme-gold .fish-fin { background: #ffb703; }
+
+#bubble-container { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:-1; overflow:hidden;}
+.bg-bubble { position: absolute; background: rgba(255,255,255,0.08); border-radius: 50%; box-shadow: inset 0 0 6px rgba(255,255,255,0.3); }
+.notification-banner { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: #ff5e62; color: white; padding: 14px 28px; border-radius: 30px; font-weight: bold; box-shadow: 0 6px 20px rgba(255,94,98,0.4); z-index: 200; animation: fadeUpOut 1.5s ease forwards; }
+
+@keyframes tailWiggle { 0% { transform: rotate(-20deg); } 100% { transform: rotate(20deg); } }
+@keyframes swimAcross { 0% { left: -70px; transform: scaleX(1); } 50% { left: 105%; transform: scaleX(-1); } 100% { left: -70px; transform: scaleX(1); } }
+@keyframes jumpArcHigh { 0% { transform: translate(40px, 200px) rotate(-45deg) scale(0.6); opacity: 0; } 15% { opacity: 1; } 45% { transform: translate(120px, -40px) rotate(0deg) scale(1.2); } 75% { opacity: 1; } 100% { transform: translate(200px, 180px) rotate(65deg) scale(0.6); opacity: 0; } }
+@keyframes rippleOutward { 0% { width: 0px; height: 0px; opacity: 1; border-width: 6px; } 100% { width: 140px; height: 140px; opacity: 0; border-width: 1px; } }
+@keyframes textFloatUp { 0% { transform: translateY(0) scale(0.6); opacity: 0; } 20% { opacity: 1; transform: translateY(-15px) scale(1.1); } 100% { transform: translateY(-70px) scale(1); opacity: 0; } }
+@keyframes fadeUpOut { 0% { opacity: 0; transform: translate(-50%, 20px); } 15% { opacity: 1; transform: translate(-50%, 0); } 75% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -20px); } }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+
+/* --- 📱 CRITICAL MOBILE MEDIA SCREEN ADAPTATION BREAKPOINT --- */
+@media (max-width: 768px) {
+    .game-container {
+        grid-template-columns: 1fr; /* Snaps side-by-side components into a single column stack on mobile */
+        gap: 15px;
+    }
+    .screen {
+        padding: 10px;
+        justify-content: flex-start;
+        overflow-y: auto;
+    }
+    .hud-header {
+        margin-bottom: 12px;
+        padding: 12px 16px;
+        border-radius: 16px;
+    }
+    .pond-section {
+        min-height: auto; /* Allow box to compact tightly around pond elements */
+        padding: 20px;
+    }
+    #fish-count { font-size: 3rem; }
+    #pond-wrapper { width: 220px; height: 220px; margin: 10px 0; }
+    .shop-section {
+        max-height: none; /* Flow down naturally with mobile screen scrolling heights */
+        padding: 15px;
+        border-radius: 20px;
+    }
+    .upgrade-card { padding: 12px; border-radius: 14px; }
 }
-.bg-bubble {
-    position: absolute; bottom: -50px;
-    background: rgba(255, 255, 255, 0.15); border-radius: 50%;
-    box-shadow: inset 0 0 8px rgba(255,255,255,0.5);
-    animation: riseUp 8s linear infinite;
-}
-
-/* --- GAME HUD NOTIFICATIONS --- */
-.notification-pop {
-    position: absolute; left: 50%; transform: translateX(-50%);
-    background: #ff4757; color: white; padding: 15px 30px; border-radius: 30px;
-    font-weight: bold; font-size: 1.3rem; box-shadow: 0 10px 20px rgba(255, 71, 87, 0.4);
-    z-index: 100; animation: slideDown 2.5s ease-in-out forwards;
-}
-@keyframes slideDown {
-    0% { top: -100px; opacity: 0; }
-    15%, 85% { top: 30px; opacity: 1; }
-    100% { top: -100px; opacity: 0; }
-}
-
-/* --- SETTINGS INTERFACE --- */
-#settings-toggle-btn { position: absolute; top: 20px; right: 20px; font-size: 2.5rem; background: none; border: none; cursor: pointer; z-index: 60; transition: 0.3s; }
-#settings-toggle-btn:hover { transform: rotate(45deg) scale(1.1); }
-#settings-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 100; }
-#settings-modal { background: #ffffff; color: #333333; padding: 30px; width: 350px; border-radius: 25px; text-align: center; animation: modalFadeIn 0.3s ease-out forwards; }
-#settings-modal h2 { margin-top: 0; color: #005c8a; }
-.setting-row { margin: 25px 0; display: flex; flex-direction: column; align-items: center; gap: 10px; font-weight: bold; }
-#volume-control { width: 80%; accent-color: #005c8a; cursor: pointer; }
-#mute-btn { background: #ff4757; color: white; padding: 10px 20px; font-size: 1rem; border: none; border-radius: 12px; font-family: 'Fredoka'; font-weight: bold; cursor: pointer;}
-.close-settings-btn { background: #bdc3c7; color: white; padding: 8px 20px; font-size: 1rem; margin-top: 10px; border: none; border-radius: 12px; font-family: 'Fredoka'; font-weight: bold; cursor: pointer;}
-
-/* --- MAIN DASHBOARD (3-COLUMN CONTAINER) --- */
-.game-container {
-    display: flex; width: 95vw; max-width: 1400px; height: 85vh;
-    background: rgba(255, 255, 255, 0.07); backdrop-filter: blur(16px);
-    border-radius: 35px; box-shadow: 0 30px 60px rgba(0,0,0,0.4);
-    border: 2px solid rgba(255, 255, 255, 0.15); overflow: hidden;
-}
-
-.side-panel {
-    flex: 0.8; background: rgba(10, 25, 47, 0.75); padding: 25px 20px;
-    display: flex; flex-direction: column; justify-content: space-between; z-index: 2;
-}
-.side-panel h3 { margin-top: 0; font-size: 1.8rem; text-align: center; color: #74ebd5; letter-spacing: 2px; }
-.left-panel { border-right: 3px solid rgba(255, 255, 255, 0.1); }
-.panel-section { display: flex; flex-direction: column; gap: 10px; }
-.rebirth-stats { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; text-align: center; font-size: 1.1rem; }
-.rebirth-stats p { margin: 4px 0; }
-.rebirth-stats strong { color: #ffd700; font-size: 1.3rem; }
-.rebirth-info-box { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; color: #b0d4de; }
-.rebirth-info-box h4 { margin: 5px 0; color: #74ebd5; }
-
-/* In-game Discord Box */
-.game-discord-box {
-    background: rgba(88, 101, 242, 0.15); border: 2px dashed rgba(88, 101, 242, 0.4);
-    padding: 15px; border-radius: 20px; text-align: center;
-}
-.game-discord-box h4 { margin: 0 0 5px 0; color: #5865F2; font-size: 1.2rem; }
-.game-discord-box p { margin: 0 0 10px 0; font-size: 0.85rem; color: #b0d4de; }
-.discord-btn { background-color: #5865F2; color: white; text-decoration: none; padding: 12px 25px; border-radius: 30px; display: inline-block; font-weight: bold; transition: 0.2s; }
-.discord-btn:hover { transform: scale(1.05); }
-.discord-btn.compact { padding: 8px 18px; font-size: 0.95rem; margin-top: 5px; }
-
-/* Rebirth Trigger Buttons */
-.rebirth-btn-locked { width: 100%; padding: 15px; background: #4a5568; color: #a0aec0; border: none; font-family: 'Fredoka'; font-size: 1.2rem; font-weight: bold; border-radius: 15px; cursor: not-allowed; }
-.rebirth-btn-ready { width: 100%; padding: 15px; background: linear-gradient(135deg, #ffd700, #ffa500); color: #001124; border: none; font-family: 'Fredoka'; font-size: 1.2rem; font-weight: bold; border-radius: 15px; cursor: pointer; animation: flashGold 2s infinite; }
-
-/* Center Interactive Pond Zone */
-.click-section { flex: 1.3; display: flex; flex-direction: column; align-items: center; justify-content: space-around; padding: 20px; }
-.stats-card { background: rgba(255, 255, 255, 0.95); color: #001f3f; padding: 15px 40px; border-radius: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.3); text-align: center; }
-.stats-card h2 { margin: 0; font-size: 2.2rem; }
-
-#pond-wrapper { position: relative; width: 400px; height: 360px; filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6)); }
-#pond { width: 100%; height: 100%; background: linear-gradient(135deg, #00d2ff 0%, #0066eb 100%); border-radius: 43% 57% 41% 59% / 57% 45% 55% 43%; cursor: pointer; position: relative; overflow: hidden; transition: transform 0.1s ease; }
-#pond:active { transform: scale(0.93); }
-.pond-ripple { position: absolute; width: 80%; height: 80%; border: 4px solid rgba(255, 255, 255, 0.2); border-radius: 50%; top: 10%; left: 10%; }
-
-.aquarium-fish { position: absolute; font-size: 1.8rem; pointer-events: none; opacity: 0.4; animation: fishSwim 12s infinite linear; }
-.jumping-fish { position: absolute; font-size: 2.5rem; pointer-events: none; z-index: 5; animation: fishJumpAnimation 1.2s ease-in-out forwards; }
-
-/* Right Side Shop Panel */
-.shop-section { border-left: 3px solid rgba(255, 255, 255, 0.1); justify-content: flex-start; }
-.shop-grid { overflow-y: auto; flex-grow: 1; padding-right: 5px; margin-top: 15px; }
-.shop-grid::-webkit-scrollbar { width: 6px; }
-.shop-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-
-.shop-item { background: rgba(255, 255, 255, 0.08); margin-bottom: 15px; padding: 15px; border-radius: 15px; cursor: pointer; transition: 0.2s; border: 1px solid rgba(255, 255, 255, 0.1); }
-.shop-item:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.15); border-color: #74ebd5; }
-.item-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem; color: #fff; }
-
-.item-lvl { background: rgba(255,255,255,0.15); color: #74ebd5; padding: 2px 10px; border-radius: 20px; font-size: 0.85rem; }
-.lvl-maxed { background: #ffd700 !important; color: #001124 !important; font-weight: bold; }
-.item-desc { margin: 5px 0 10px 0; color: #b0d4de; font-size: 0.9rem; }
-.buy-btn { width: 100%; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; padding: 10px; font-family: 'Fredoka'; font-size: 1.1rem; font-weight: bold; border-radius: 10px; cursor: pointer; }
